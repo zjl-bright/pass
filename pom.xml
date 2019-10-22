@@ -18,6 +18,9 @@
         <java.version>13</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <vertx.version>4.0.0-milestone3</vertx.version>
+
+        <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
+        <maven-surefire-plugin.version>2.22.1</maven-surefire-plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -57,4 +60,20 @@
             <url>http://repo.hshbao.com/repository/maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <release>${java.version}</release>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
+            </plugin>
+        </plugins>
+    </build>
 </project>
