@@ -1,0 +1,17 @@
+{
+  "mongodb": {
+    "connection_string": "mongodb://admin:admin@119.29.89.14:29019/mqm_dev"
+  },
+  "http": {
+    "port": 8256
+  },
+  "ci": {
+    "herd-admin": "/usr/local/code/HSHBAO/XingHe/hsh-admin",
+    "herd-web": "/usr/local/code/HSHBAO/XingHe/hsh-web",
+    "hsh": "/usr/local/code/HSHBAO/XingHe/hsh",
+    "future": "test",
+    "excellent": "develop",
+    "customer": "master",
+    "terminus": "master"
+  }
+}
