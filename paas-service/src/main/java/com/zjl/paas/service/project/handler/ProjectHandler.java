@@ -46,6 +46,4 @@ public class ProjectHandler extends BaseHandler<Project> {
       }
     });
   }
-
-
 }
