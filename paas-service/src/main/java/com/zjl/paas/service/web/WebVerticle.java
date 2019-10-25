@@ -3,6 +3,7 @@ package com.zjl.paas.service.web;
 import com.google.common.base.Throwables;
 import com.zjl.paas.common.dao.MongoDao;
 import com.zjl.paas.common.model.Response;
+import com.zjl.paas.service.project.handler.ProjectHandler;
 import com.zjl.paas.service.user.handler.UserHandler;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
@@ -40,12 +41,15 @@ public class WebVerticle extends AbstractVerticle {
 
   private UserHandler userHandler;
 
+  private ProjectHandler projectHandler;
+
   @Override
   public void init(Vertx vertx, Context context) {
     super.init(vertx, context);
     config = config();
     mongo = new MongoDao(MongoClient.createShared(vertx, config.getJsonObject("mongodb")));
     userHandler = new UserHandler(mongo);
+    projectHandler = new ProjectHandler(mongo);
   }
 
   @Override
@@ -118,7 +122,7 @@ public class WebVerticle extends AbstractVerticle {
 
     /* API */
     router.mountSubRouter("/api/user", userRouter(apiRouter));
-
+    router.mountSubRouter("/api/project", projectRouter(apiRouter));
 
     /* SockJS / EventBus */
 //    router.route("/eventbus/*").handler(eventBusHandler());
@@ -151,6 +155,15 @@ public class WebVerticle extends AbstractVerticle {
 //    router.put("/feeds/:feedId").handler(feedsApi::update);
 //    router.get("/feeds/:feedId/entries").handler(feedsApi::entries);
 //    router.delete("/feeds/:feedId").handler(feedsApi::delete);
+
+    return router;
+  }
+
+  private Router projectRouter(Router router) {
+    router.post().handler(projectHandler::save);
+    router.delete().handler(projectHandler::remove);
+    router.get("/find").handler(projectHandler::findWithSort);
+    router.get("/update").handler(projectHandler::updates);
 
     return router;
   }

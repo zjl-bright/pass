@@ -1,7 +1,13 @@
 package com.zjl.paas.service.project.handler;
 
 import com.zjl.paas.common.dao.MongoDao;
-import com.zjl.paas.common.dao.RedisDao;
+import com.zjl.paas.common.handler.BaseHandler;
+import com.zjl.paas.common.model.Response;
+import com.zjl.paas.service.project.entity.Project;
+import io.netty.util.internal.StringUtil;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.RoutingContext;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * TODO
@@ -10,15 +16,35 @@ import com.zjl.paas.common.dao.RedisDao;
  * @Date: 2019-09-21
  * @Version: 1.0
  */
-public class ProjectHandler {
+public class ProjectHandler extends BaseHandler<Project> {
+
+  private final String collection = "project";
 
   private final MongoDao mongoDao;
 
-  private final RedisDao redisDao;
-
-  public ProjectHandler(MongoDao mongoDao, RedisDao redisDao){
+  public ProjectHandler(MongoDao mongoDao){
+    super(mongoDao);
     this.mongoDao = mongoDao;
-    this.redisDao = redisDao;
+  }
+
+  @Override
+  public void save(RoutingContext context){
+    JsonObject jsonObject = context.getBodyAsJson();
+    String name = jsonObject.getString("name");
+    if(StringUtils.isBlank(name)){
+      context.response().end(Response.fail("项目名称不能为空").encodePrettily());
+    }
+    mongoDao.save(collection, context.get("json"), res -> {
+      try{
+        if(res.succeeded()){
+          context.response().end(Response.ok(res.result()).encodePrettily());
+        }else{
+          context.fail(res.cause());
+        }
+      } catch (Exception e){
+        context.fail(e);
+      }
+    });
   }
 
 

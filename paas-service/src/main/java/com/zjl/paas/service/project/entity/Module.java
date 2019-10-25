@@ -5,32 +5,29 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
  * TODO
  *
- * @Auther: zhaojl@hshbao.com
- * @Date: 2019-09-21
+ * @Auther: zjl
+ * @Date: 2019-10-24
  * @Version: 1.0
  */
 @Getter
 @Setter
 @Accessors(chain = true)
-public class Project extends BaseEntity {
+public class Module extends BaseEntity {
 
-  private String name;
+    private String name;
 
-  private String logo;
+    private String sourcesPath;
 
-  private String desc;
+    private String cmd;
 
-  private String gitPath;
+    private String targetPath;
 
-  private List<Map<String, String>> branchs;
-
-  private String cmd;
+    private String file;
 
 }
