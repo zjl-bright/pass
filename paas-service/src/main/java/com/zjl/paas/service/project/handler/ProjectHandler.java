@@ -4,7 +4,6 @@ import com.zjl.paas.common.dao.MongoDao;
 import com.zjl.paas.common.handler.BaseHandler;
 import com.zjl.paas.common.model.Response;
 import com.zjl.paas.service.project.entity.Project;
-import io.netty.util.internal.StringUtil;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import org.apache.commons.lang3.StringUtils;

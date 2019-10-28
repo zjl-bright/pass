@@ -16,6 +16,8 @@ import io.vertx.ext.bridge.PermittedOptions;
 import io.vertx.ext.mongo.MongoClient;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.api.validation.HTTPRequestValidationHandler;
+import io.vertx.ext.web.api.validation.ParameterType;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.ext.web.handler.sockjs.BridgeOptions;
@@ -160,7 +162,10 @@ public class WebVerticle extends AbstractVerticle {
   }
 
   private Router projectRouter(Router router) {
-    router.post().handler(projectHandler::save);
+
+    HTTPRequestValidationHandler validationHandler = HTTPRequestValidationHandler.create().addQueryParam("parameterName", ParameterType.INT, true).addFormParamWithPattern("formParameterName", "a{4}", true).addPathParam("pathParam", ParameterType.FLOAT);
+
+    router.post().handler(validationHandler).handler(projectHandler::save);
     router.delete().handler(projectHandler::remove);
     router.get("/find").handler(projectHandler::findWithSort);
     router.get("/update").handler(projectHandler::updates);

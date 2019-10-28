@@ -1,6 +1,7 @@
 package com.zjl.paas.service.project.entity;
 
 import com.zjl.paas.common.model.BaseEntity;
+import io.vertx.codegen.annotations.DataObject;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -19,6 +20,7 @@ import java.util.Map;
 @Getter
 @Setter
 @Accessors(chain = true)
+@DataObject
 public class Project extends BaseEntity {
 
   private String name;

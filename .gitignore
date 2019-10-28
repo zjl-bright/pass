@@ -185,4 +185,5 @@ nbdist/
 !.vscode/extensions.json
 
 .idea/
+target/
 dependency.txt
