@@ -8,7 +8,6 @@ import me.zjl.boot.VertxBoot;
 public class PassApplication {
 
   public static void main(String[] args) {
-    System.out.println(args.length);
     VertxBoot.run(Vertx.vertx(), PassApplication.class, args);
   }
 }

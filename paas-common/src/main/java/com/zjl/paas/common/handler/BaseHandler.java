@@ -7,7 +7,6 @@ import io.vertx.ext.web.RoutingContext;
 import me.zjl.boot.mongodb.MongoRepository;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.lang.reflect.ParameterizedType;
 
 /**

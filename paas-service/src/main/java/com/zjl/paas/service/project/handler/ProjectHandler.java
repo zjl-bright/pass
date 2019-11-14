@@ -27,12 +27,7 @@ import java.util.Map;
 public class ProjectHandler extends BaseHandler<Project> {
 
   @RequestMapping(path = "/:aa/:bb", method = HttpMethod.POST)
-  public void find(String aa, String bb, MultiMap map, RoutingContext context, JsonObject jsonObject){
-    map.forEach(entity -> {
-            System.out.println(entity.getKey() + "~~" + entity.getValue());
-    });
-//    String aa = map.get("aa");
-//    String bb = map.get("bb");
+  public void find(RoutingContext context, String aa, String bb, MultiMap map, JsonObject jsonObject){
     String name = map.get("name");
     String gitPath = map.get("gitPath");
     Project project = jsonObject.mapTo(Project.class);
