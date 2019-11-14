@@ -1,4 +1,4 @@
-package com.zjl.paas.service.handlers;
+package com.zjl.paas.service.handler;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;

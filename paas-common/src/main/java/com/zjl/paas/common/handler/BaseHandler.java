@@ -4,7 +4,10 @@ import com.zjl.paas.common.dao.MongoDao;
 import com.zjl.paas.common.model.BaseEntity;
 import com.zjl.paas.common.model.Response;
 import io.vertx.ext.web.RoutingContext;
+import me.zjl.boot.mongodb.MongoRepository;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.lang.reflect.ParameterizedType;
 
 /**
@@ -18,16 +21,21 @@ public class BaseHandler<T extends BaseEntity> {
 
     private String collection;
 
-    private final MongoDao mongoDao;
+    @Inject
+    private MongoRepository mongoRepository;
 
-    public BaseHandler(MongoDao mongoDao){
-        this.mongoDao = mongoDao;
+    public BaseHandler(){
         Class<T> theClass = (Class)((ParameterizedType)this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
-        collection = theClass.getName();
+        String className = theClass.getName();
+        if(className.lastIndexOf(".") > -1){
+            collection = className.substring(className.lastIndexOf("."));
+        }else{
+            collection = className;
+        }
     }
 
     public void save(RoutingContext context){
-        mongoDao.save(collection, context.get("json"), res -> {
+        mongoRepository.save(collection, context.get("json"), res -> {
             try{
                 if(res.succeeded()){
                     context.response().end(Response.ok(res.result()).encodePrettily());
@@ -41,7 +49,7 @@ public class BaseHandler<T extends BaseEntity> {
     }
 
     public void remove(RoutingContext context){
-        mongoDao.remove(collection, context.get("json"), res -> {
+        mongoRepository.remove(collection, context.get("json"), res -> {
             try{
                 if(res.succeeded()){
                     context.response().end(Response.ok("true").encodePrettily());
@@ -55,7 +63,7 @@ public class BaseHandler<T extends BaseEntity> {
     }
 
     public void findOne(RoutingContext context){
-        mongoDao.findOne(collection, context.get("json"), res -> {
+        mongoRepository.findOne(collection, context.get("json"), res -> {
             try{
                 if(res.succeeded()){
                     context.response().end(Response.ok(res.result()).encodePrettily());
@@ -69,7 +77,7 @@ public class BaseHandler<T extends BaseEntity> {
     }
 
     public void find(RoutingContext context){
-        mongoDao.find(collection, context.get("json"), res -> {
+        mongoRepository.find(collection, context.get("json"), res -> {
             try{
                 if(res.succeeded()){
                     context.response().end(Response.ok(res.result()).encodePrettily());
@@ -84,7 +92,7 @@ public class BaseHandler<T extends BaseEntity> {
 
     //只排序, 针对小型数据集
     public void findWithSort(RoutingContext context){
-        mongoDao.findWithSort(collection, context.get("json"), context.get("sort"), res -> {
+        mongoRepository.findWithSort(collection, context.get("json"), context.get("sort"), res -> {
             try{
                 if(res.succeeded()){
                     context.response().end(Response.ok(res.result()).encodePrettily());
@@ -105,7 +113,7 @@ public class BaseHandler<T extends BaseEntity> {
             pageNum = 1;
         }
         int skip = pageSize * (pageNum - 1);
-        mongoDao.findWithSortAndPage(collection, context.get("json"), context.get("sort"), skip, pageSize, res -> {
+        mongoRepository.findWithSortAndPage(collection, context.get("json"), context.get("sort"), skip, pageSize, res -> {
             try{
                 if(res.succeeded()){
                     context.response().end(Response.ok(res.result()).encodePrettily());
@@ -120,7 +128,7 @@ public class BaseHandler<T extends BaseEntity> {
 
     //计量
     public void count(RoutingContext context){
-        mongoDao.count(collection, context.get("json"), res -> {
+        mongoRepository.count(collection, context.get("json"), res -> {
             try{
                 if(res.succeeded()){
                     context.response().end(Response.ok(res.result()).encodePrettily());
@@ -135,7 +143,7 @@ public class BaseHandler<T extends BaseEntity> {
 
     //更新文档
     public void updates(RoutingContext context){
-        mongoDao.updates(collection, context.get("json"), context.get("document"), res -> {
+        mongoRepository.updates(collection, context.get("json"), context.get("document"), res -> {
             try{
                 if(res.succeeded()){
                     context.response().end(Response.ok(res.result()).encodePrettily());
@@ -150,7 +158,7 @@ public class BaseHandler<T extends BaseEntity> {
 
     //替换文档
     public void replace(RoutingContext context){
-        mongoDao.replace(collection, context.get("json"), context.get("document"), res -> {
+        mongoRepository.replace(collection, context.get("json"), context.get("document"), res -> {
             try{
                 if(res.succeeded()){
                     context.response().end(Response.ok(res.result()).encodePrettily());
