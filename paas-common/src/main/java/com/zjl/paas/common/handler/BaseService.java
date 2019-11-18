@@ -1,13 +1,14 @@
 package com.zjl.paas.common.handler;
 
-import com.zjl.paas.common.dao.MongoDao;
 import com.zjl.paas.common.model.BaseEntity;
 import com.zjl.paas.common.model.Response;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import me.zjl.boot.mongodb.MongoRepository;
 
 import javax.inject.Inject;
 import java.lang.reflect.ParameterizedType;
+import java.util.function.Function;
 
 /**
  * TODO
@@ -16,25 +17,25 @@ import java.lang.reflect.ParameterizedType;
  * @Date: 2019-10-24
  * @Version: 1.0
  */
-public class BaseHandler<T extends BaseEntity> {
+public class BaseService<T extends BaseEntity> {
 
     private String collection;
 
     @Inject
     private MongoRepository mongoRepository;
 
-    public BaseHandler(){
+    public BaseService(){
         Class<T> theClass = (Class)((ParameterizedType)this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
-        String className = theClass.getName();
+        String className = theClass.getName().toLowerCase();
         if(className.lastIndexOf(".") > -1){
-            collection = className.substring(className.lastIndexOf("."));
+            collection = className.substring(className.lastIndexOf(".")+1);
         }else{
             collection = className;
         }
     }
 
-    public void save(RoutingContext context){
-        mongoRepository.save(collection, context.get("json"), res -> {
+    public void save(RoutingContext context, JsonObject jsonObject){
+        mongoRepository.save(collection, jsonObject, res -> {
             try{
                 if(res.succeeded()){
                     context.response().end(Response.ok(res.result()).encodePrettily());
@@ -47,8 +48,8 @@ public class BaseHandler<T extends BaseEntity> {
         });
     }
 
-    public void remove(RoutingContext context){
-        mongoRepository.remove(collection, context.get("json"), res -> {
+    public void remove(RoutingContext context, JsonObject jsonObject){
+        mongoRepository.remove(collection, jsonObject, res -> {
             try{
                 if(res.succeeded()){
                     context.response().end(Response.ok("true").encodePrettily());
@@ -61,8 +62,8 @@ public class BaseHandler<T extends BaseEntity> {
         });
     }
 
-    public void findOne(RoutingContext context){
-        mongoRepository.findOne(collection, context.get("json"), res -> {
+    public void findOne(RoutingContext context, JsonObject jsonObject){
+        mongoRepository.findOne(collection, jsonObject, res -> {
             try{
                 if(res.succeeded()){
                     context.response().end(Response.ok(res.result()).encodePrettily());
@@ -75,8 +76,22 @@ public class BaseHandler<T extends BaseEntity> {
         });
     }
 
-    public void find(RoutingContext context){
-        mongoRepository.find(collection, context.get("json"), res -> {
+    public void findOne(RoutingContext context, JsonObject jsonObject, Function<JsonObject, Boolean> handler){
+        mongoRepository.findOne(collection, jsonObject, res -> {
+            try{
+                if(res.succeeded()){
+                    context.response().end(Response.ok(handler.apply(res.result())).encodePrettily());
+                }else{
+                    context.fail(res.cause());
+                }
+            } catch (Exception e){
+                context.fail(e);
+            }
+        });
+    }
+
+    public void find(RoutingContext context, JsonObject jsonObject){
+        mongoRepository.find(collection, jsonObject, res -> {
             try{
                 if(res.succeeded()){
                     context.response().end(Response.ok(res.result()).encodePrettily());

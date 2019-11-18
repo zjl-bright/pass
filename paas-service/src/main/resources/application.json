@@ -1,7 +1,4 @@
 {
-  "mongodb": {
-    "connection_string": "mongodb://admin:admin@119.29.89.14:29019/mqm_dev"
-  },
   "http": {
     "port": 8256
   },

@@ -1,19 +1,17 @@
 package com.zjl.paas.service.project.handler;
 
-import com.zjl.paas.common.handler.BaseHandler;
+import com.zjl.paas.common.handler.BaseService;
 import com.zjl.paas.common.model.Response;
+import com.zjl.paas.service.project.ProjectService;
 import com.zjl.paas.service.project.entity.Project;
-import io.vertx.core.MultiMap;
-import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpMethod;
-import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import me.zjl.boot.annotation.RequestMapping;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.Map;
 
 /**
  * TODO
@@ -22,51 +20,30 @@ import java.util.Map;
  * @Date: 2019-09-21
  * @Version: 1.0
  */
-@RequestMapping("/api/project")
+@RequestMapping("/project")
 @Singleton
-public class ProjectHandler extends BaseHandler<Project> {
+public class ProjectHandler{
 
-  @RequestMapping(path = "/:aa/:bb", method = HttpMethod.POST)
-  public void find(RoutingContext context, String aa, String bb, MultiMap map, JsonObject jsonObject){
-    String name = map.get("name");
-    String gitPath = map.get("gitPath");
-    Project project = jsonObject.mapTo(Project.class);
-    if(StringUtils.isBlank(name)){
-      context.response().end(Response.fail("项目名称不能为空").encodePrettily());
-    }
-    findWithSortAndPage(context);
+  @Inject
+  private ProjectService projectService;
 
-////排序且分页, 针对小型数据集
-//    public void findWithSortAndPage(RoutingContext context){
-//      Integer pageSize = context.get("pageSize");
-//      Integer pageNum = context.get("pageNum");
-//      if (pageNum <= 0) {
-//        pageNum = 1;
-//      }
-//      int skip = pageSize * (pageNum - 1);
-//      mongoRepository.findWithSortAndPage(collection, context.get("json"), context.get("sort"), skip, pageSize, res -> {
-//        try{
-//          if(res.succeeded()){
-//            context.response().end(Response.ok(res.result()).encodePrettily());
-//          }else{
-//            context.fail(res.cause());
-//          }
-//        } catch (Exception e){
-//          context.fail(e);
-//        }
-//      });
-//    }
+  @RequestMapping()
+  public void findAll(RoutingContext context){
+    projectService.find(context, new JsonObject());
   }
 
-  @RequestMapping("/save")
-  public void save(RoutingContext context, MultiMap map, JsonObject jsonObject){
-    String name = map.get("name");
-    String gitPath = map.get("gitPath");
+  @RequestMapping(method = HttpMethod.POST)
+  public void saveProject(RoutingContext context, JsonObject jsonObject){
+    projectService.save(context, jsonObject);
+  }
 
-//    Project project = jsonObject.mapTo(Project.class);
-//    if(StringUtils.isBlank(name)){
-//      context.response().end(Response.fail("项目名称不能为空").encodePrettily());
-//    }
-    save(context);
+  @RequestMapping(method = HttpMethod.DELETE)
+  public void delete(RoutingContext context, JsonObject jsonObject){
+    String id = jsonObject.getString("id");
+    if(StringUtils.isBlank(id)){
+      context.response().end(Response.ok("删除id不可为空").encodePrettily());
+      return;
+    }
+    projectService.remove(context, jsonObject);
   }
 }

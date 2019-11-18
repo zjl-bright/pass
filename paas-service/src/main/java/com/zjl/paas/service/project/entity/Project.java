@@ -29,6 +29,8 @@ public class Project extends BaseEntity {
 
   private String desc;
 
+  private String filePath;
+
   private String gitPath;
 
   private List<Map<String, String>> branchs;

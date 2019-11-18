@@ -12,7 +12,7 @@
 // * @Date: 2019-10-28
 // * @Version: 1.0
 // */
-//public class PostHandler extends BaseHandler {
+//public class PostHandler extends BaseService {
 //
 //    public PostHandler(Vertx vertx) {
 //        super(vertx);

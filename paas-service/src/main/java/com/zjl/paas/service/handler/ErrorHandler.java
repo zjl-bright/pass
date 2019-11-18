@@ -13,7 +13,7 @@
 // * @Date: 2019-10-28
 // * @Version: 1.0
 // */
-//public class ErrorHandler extends BaseHandler {
+//public class ErrorHandler extends BaseService {
 //    private static Logger logger = LoggerFactory.getLogger(ErrorHandler.class);
 //
 //    public ErrorHandler(Vertx vertx) {
