@@ -1,4 +1,4 @@
-package com.zjl.paas.service.user.entity;
+package com.zjl.paas.service.route.user.entity;
 
 import com.zjl.paas.common.model.BaseEntity;
 import lombok.Getter;

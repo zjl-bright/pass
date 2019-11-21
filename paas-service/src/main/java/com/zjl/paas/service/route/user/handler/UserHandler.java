@@ -1,7 +1,7 @@
-package com.zjl.paas.service.user.handler;
+package com.zjl.paas.service.route.user.handler;
 
 import com.google.common.base.Strings;
-import com.zjl.paas.service.user.service.UserService;
+import com.zjl.paas.service.route.user.service.UserService;
 import com.zjl.paas.service.util.EncryptUtil;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
@@ -48,22 +48,11 @@ public class UserHandler{
     });
   }
 
-//  public void register(RoutingContext context){
-//    JsonObject user = context.get("user");
-//    mongoDao.insert(collection, user, res -> {
-//      try{
-//        if(res.succeeded()){
-//          //其他可能发生异常的业务代码
-//          context.response().end(Response.ok(res.result()).encodePrettily());
-//        }else{
-//          context.fail(res.cause());
-//        }
-//      } catch (Exception e){
-//        context.fail(e);
-//      }
-//    });
-//  }
-//
+  @RequestMapping(value = "/register", method = HttpMethod.POST)
+  public void register(RoutingContext ctx, JsonObject jsonObject){
+    userService.save(ctx, jsonObject);
+  }
+
 //  public void getOne(RoutingContext context){
 //    mongoDao.findOne(collection, new JsonObject().put("", ""), res -> {
 //      try{

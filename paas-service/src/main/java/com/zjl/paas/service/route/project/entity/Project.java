@@ -1,4 +1,4 @@
-package com.zjl.paas.service.project.entity;
+package com.zjl.paas.service.route.project.entity;
 
 import com.zjl.paas.common.model.BaseEntity;
 import io.vertx.codegen.annotations.DataObject;
@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 

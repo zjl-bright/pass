@@ -1,9 +1,7 @@
-package com.zjl.paas.service.project.handler;
+package com.zjl.paas.service.route.project.handler;
 
-import com.zjl.paas.common.handler.BaseService;
 import com.zjl.paas.common.model.Response;
-import com.zjl.paas.service.project.ProjectService;
-import com.zjl.paas.service.project.entity.Project;
+import com.zjl.paas.service.route.project.ProjectService;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
@@ -45,5 +43,14 @@ public class ProjectHandler{
       return;
     }
     projectService.remove(context, jsonObject);
+  }
+
+  @RequestMapping("/clone/:projectId")
+  public void cloneCode(RoutingContext context, String projectId){
+
+    projectService.findOne(context, new JsonObject(projectId), res ->{
+
+      return  true;
+    });
   }
 }
