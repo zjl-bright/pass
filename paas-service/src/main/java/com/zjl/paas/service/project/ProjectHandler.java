@@ -2,6 +2,7 @@ package com.zjl.paas.service.project;
 
 import com.zjl.paas.common.enums.Env;
 import com.zjl.paas.common.model.Response;
+import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonArray;
@@ -31,8 +32,9 @@ public class ProjectHandler{
     @Inject
     private ProjectService projectService;
 
-    @Named("project_dir_path")
-    private String projectPath;
+    @Inject
+    @Named("project.dir_path")
+    private String dir_path;
 
     @RequestMapping()
     public void find(RoutingContext context){
@@ -40,18 +42,29 @@ public class ProjectHandler{
     }
 
     @RequestMapping(method = HttpMethod.DELETE)
-    public void delete(RoutingContext context, JsonObject jsonObject){
-        String id = jsonObject.getString("id");
+    public void delete(RoutingContext context, MultiMap map){
+        String id = map.get("id");
         if(StringUtils.isBlank(id)){
-            context.response().end(Response.ok("删除id不可为空").encodePrettily());
+            context.response().end(Response.ok("id不可为空").encodePrettily());
             return;
         }
-        projectService.remove(context, jsonObject);
+        projectService.remove(context, new JsonObject().put("_id", id));
     }
 
     @RequestMapping(method = HttpMethod.POST)
     public void save(RoutingContext context, JsonObject jsonObject){
-        String dirPath = projectPath + "/" + jsonObject.getString("dirName");
+        String dirName = jsonObject.getString("dirName");
+        String name = jsonObject.getString("name");
+
+        if(StringUtils.isBlank(dirName)){
+            context.response().end(Response.ok("dirName不可为空").encodePrettily());
+            return;
+        }
+        if(StringUtils.isBlank(name)){
+            context.response().end(Response.ok("name不可为空").encodePrettily());
+            return;
+        }
+        String dirPath = dir_path + "/" + dirName;
         jsonObject.put("dirPath", dirPath);
         projectService.save(context, jsonObject, res -> {
             Env[] envs = Env.values();
@@ -69,7 +82,7 @@ public class ProjectHandler{
 
     @RequestMapping(method = HttpMethod.PUT)
     public void update(RoutingContext context, JsonObject jsonObject){
-        String dirPath = projectPath + "/" + jsonObject.getString("dirName");
+        String dirPath = dir_path + "/" + jsonObject.getString("dirName");
         jsonObject.put("dirPath", dirPath);
         projectService.save(context, jsonObject);
     }

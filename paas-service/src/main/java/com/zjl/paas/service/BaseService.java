@@ -68,7 +68,7 @@ public class BaseService<T extends BaseEntity> {
         mongoRepository.remove(collection, jsonObject, res -> {
             try{
                 if(res.succeeded()){
-                    context.response().end(Response.ok("true").encodePrettily());
+                    context.response().end(Response.ok(res.result().getRemovedCount()).encodePrettily());
                 }else{
                     context.fail(res.cause());
                 }

@@ -1,12 +1,11 @@
 package com.zjl.paas.service.env;
 
-import io.vertx.core.json.JsonObject;
+import io.vertx.core.json.JsonArray;
 import lombok.extern.slf4j.Slf4j;
 import me.zjl.boot.annotation.WorkerMapping;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.ArrayList;
 
 /**
  * TODO
@@ -24,8 +23,8 @@ public class EnvWorker {
     private EnvService envService;
 
     @WorkerMapping("init")
-    public void init(JsonObject jsonObject) {
-        envService.batchInsert(new ArrayList(), res -> {
+    public void init(JsonArray jsonArray) {
+        envService.batchInsert(jsonArray, res -> {
             System.out.println(res.getInsertedCount());
         });
     }

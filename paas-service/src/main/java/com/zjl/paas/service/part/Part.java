@@ -5,8 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.util.List;
-
 /**
  * TODO
  *
@@ -19,30 +17,11 @@ import java.util.List;
 @Accessors(chain = true)
 public class Part extends BaseEntity {
 
+    private String projectId;
+
     private String name;
 
     private String gitPath;
 
     private String cmd;
-
-    private List<Module> modules;
-
-//    private String file;
-//
-//    /**
-//     * TODO
-//     * @Auther: zjl
-//     * @Date: 2019-11-18
-//     * @Version: 1.0
-//     */
-//    @RequestMapping("/project")
-//    @Singleton
-//    public static class CMDHandler {
-//
-//
-//        @RequestMapping()
-//        public void findAll(RoutingContext context){
-//
-//        }
-//    }
 }

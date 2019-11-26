@@ -17,14 +17,13 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class Project extends BaseEntity {
 
-  private String name;
+    private String name;
 
-  private String dirName;
+    private String dirName;
 
-  private String logo;
+    private String logo;
 
-  private String desc;
+    private String desc;
 
-  private String dirPath;
-
+    private String dirPath;
 }
