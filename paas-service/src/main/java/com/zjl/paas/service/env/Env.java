@@ -1,12 +1,9 @@
 package com.zjl.paas.service.env;
 
 import com.zjl.paas.common.model.BaseEntity;
-import com.zjl.paas.service.module.Module;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
-import java.util.List;
 
 /**
  * TODO

@@ -41,15 +41,15 @@ public class PartHandler {
 
     @RequestMapping(method = HttpMethod.POST)
     public void save(RoutingContext context, JsonObject jsonObject){
-        String dirPath = codePath + "/" + jsonObject.getString("name");
-        jsonObject.put("dirPath", dirPath);
-        projectService.save(context, jsonObject);
+//        String dirPath = codePath + "/" + jsonObject.getString("name");
+//        jsonObject.put("dirPath", dirPath);
+//        projectService.save(context, jsonObject);
     }
 
     @RequestMapping("/reset/:moudleId")
     public void reset(RoutingContext context, String projectId){
-        projectService.findOne(context, new JsonObject().put("projectId", projectId), res ->{
-            vertx.eventBus().send("project.clone", res);
-        });
+//        projectService.findOne(context, new JsonObject().put("projectId", projectId), res ->{
+//            vertx.eventBus().send("project.clone", res);
+//        });
     }
 }

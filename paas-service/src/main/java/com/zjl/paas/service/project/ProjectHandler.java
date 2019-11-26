@@ -2,8 +2,6 @@ package com.zjl.paas.service.project;
 
 import com.zjl.paas.common.enums.Env;
 import com.zjl.paas.common.model.Response;
-import com.zjl.paas.service.env.EnvHandler;
-import com.zjl.paas.service.env.EnvService;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonArray;
@@ -31,13 +29,7 @@ public class ProjectHandler{
     private Vertx vertx;
 
     @Inject
-    private EnvHandler envHandler;
-
-    @Inject
     private ProjectService projectService;
-
-    @Inject
-    private EnvService envService;
 
     @Named("project_dir_path")
     private String projectPath;

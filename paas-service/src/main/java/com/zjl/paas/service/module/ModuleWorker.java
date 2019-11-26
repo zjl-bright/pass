@@ -30,35 +30,35 @@ public class ModuleWorker {
     @Inject
     private JGitUtil jGit;
 
-    @WorkerMapping("clone")
-    public Boolean clone(JsonObject jsonObject){
+//    @WorkerMapping("clone")
+//    public Boolean clone(JsonObject jsonObject){
+//
+//        String gitPath = jsonObject.getString("gitPath");
+//        String filePath = jsonObject.getString("filePath");
+//
+//        File file = new File(filePath);
+//        if(file.exists()){
+//            deleteFile(file);
+//        }else{
+//            file.mkdirs();
+//        }
+//        return jGit.cloneRepository(gitPath, filePath);
+//    }
 
-        String gitPath = jsonObject.getString("gitPath");
-        String filePath = jsonObject.getString("filePath");
-
-        File file = new File(filePath);
-        if(file.exists()){
-            deleteFile(file);
-        }else{
-            file.mkdirs();
-        }
-        return jGit.cloneRepository(gitPath, filePath);
-    }
-
-    private void deleteFile(File file){
-        if(file){
-
-        }
-        int length = files.length;
-        for(int index = 0; index < length; index++){
-            if(files[index].isDirectory()){
-                deleteFile(files[index].listFiles());
-                files[index].delete();
-            }else{
-                files[index].delete();
-            }
-        }
-    }
+//    private void deleteFile(File file){
+//        if(file){
+//
+//        }
+//        int length = files.length;
+//        for(int index = 0; index < length; index++){
+//            if(files[index].isDirectory()){
+//                deleteFile(files[index].listFiles());
+//                files[index].delete();
+//            }else{
+//                files[index].delete();
+//            }
+//        }
+//    }
 }
 
 
