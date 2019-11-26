@@ -1,4 +1,4 @@
-package com.zjl.paas.common.handler;
+package com.zjl.paas.service;
 
 import com.zjl.paas.common.model.BaseEntity;
 import com.zjl.paas.common.model.Response;
@@ -8,6 +8,7 @@ import me.zjl.boot.mongodb.MongoRepository;
 
 import javax.inject.Inject;
 import java.lang.reflect.ParameterizedType;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -48,6 +49,21 @@ public class BaseService<T extends BaseEntity> {
         });
     }
 
+    public void save(RoutingContext context, JsonObject jsonObject, Consumer<String> handler){
+        mongoRepository.save(collection, jsonObject, res -> {
+            try{
+                if(res.succeeded()){
+                    handler.accept(res.result());
+                    context.response().end(Response.ok(res.result()).encodePrettily());
+                }else{
+                    context.fail(res.cause());
+                }
+            } catch (Exception e){
+                context.fail(e);
+            }
+        });
+    }
+
     public void remove(RoutingContext context, JsonObject jsonObject){
         mongoRepository.remove(collection, jsonObject, res -> {
             try{
@@ -67,6 +83,22 @@ public class BaseService<T extends BaseEntity> {
             try{
                 if(res.succeeded()){
                     context.response().end(Response.ok(res.result()).encodePrettily());
+                }else{
+                    context.fail(res.cause());
+                }
+            } catch (Exception e){
+                context.fail(e);
+            }
+        });
+    }
+
+
+    public void findOne(RoutingContext context, JsonObject jsonObject, Consumer<JsonObject> handler){
+        mongoRepository.findOne(collection, jsonObject, res -> {
+            try{
+                if(res.succeeded()){
+                    handler.accept(res.result());
+                    context.response().end(Response.ok().encodePrettily());
                 }else{
                     context.fail(res.cause());
                 }
@@ -183,5 +215,13 @@ public class BaseService<T extends BaseEntity> {
                 context.fail(e);
             }
         });
+    }
+
+    public MongoRepository getMongoRepository(){
+        return mongoRepository;
+    }
+
+    public String getCollection(){
+        return collection;
     }
 }

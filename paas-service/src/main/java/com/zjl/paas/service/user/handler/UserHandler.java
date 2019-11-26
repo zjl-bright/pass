@@ -1,7 +1,7 @@
-package com.zjl.paas.service.route.user.handler;
+package com.zjl.paas.service.user.handler;
 
 import com.google.common.base.Strings;
-import com.zjl.paas.service.route.user.service.UserService;
+import com.zjl.paas.service.user.service.UserService;
 import com.zjl.paas.service.util.EncryptUtil;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;

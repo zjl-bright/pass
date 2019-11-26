@@ -1,13 +1,9 @@
-package com.zjl.paas.service.route.project.entity;
+package com.zjl.paas.service.project;
 
 import com.zjl.paas.common.model.BaseEntity;
-import io.vertx.codegen.annotations.DataObject;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * TODO
@@ -19,21 +15,16 @@ import java.util.Map;
 @Getter
 @Setter
 @Accessors(chain = true)
-@DataObject
 public class Project extends BaseEntity {
 
   private String name;
+
+  private String dirName;
 
   private String logo;
 
   private String desc;
 
-  private String filePath;
-
-  private String gitPath;
-
-  private List<Map<String, String>> branchs;
-
-  private String cmd;
+  private String dirPath;
 
 }

@@ -1,7 +1,6 @@
-package com.zjl.paas.service.route.project;
+package com.zjl.paas.service.project;
 
-import com.zjl.paas.common.handler.BaseService;
-import com.zjl.paas.service.route.project.entity.Project;
+import com.zjl.paas.service.BaseService;
 
 import javax.inject.Singleton;
 
