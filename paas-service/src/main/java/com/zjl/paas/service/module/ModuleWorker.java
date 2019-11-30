@@ -33,32 +33,31 @@ public class ModuleWorker {
     public Boolean cmdPackage(JsonObject jsonObject){
         String branchName = jsonObject.getString("branchName");
         String partId = jsonObject.getString("partId");
+        String modulePath = jsonObject.getString("path");
+        String cmd = jsonObject.getString("cmd");
 
-//        partService.findone(new JsonObject().put("_id", partId), part -> {
-//            String path = part.getString("path");
-//
-//
-//        });
+        partService.findOne(new JsonObject().put("_id", partId), part -> {
+            String partPath = part.getString("path");
+            start(partPath, branchName, modulePath, cmd);
+
+        });
 
         return true;
 
     }
 
-    public void start(String path, String branchName, String modulePath, String cmd){
-        if(jGit.checkoutAndPull(path, branchName)){
-            log.info("目录：{}, checkout and pull 成功", path);
-            doPackage(path + "/" + modulePath, cmd);
+    public void start(String partPath, String branchName, String modulePath, String cmd){
+        if(jGit.checkoutAndPull(partPath, branchName)){
+            log.info("目录：{}, checkout and pull 成功", partPath);
+            doPackage(modulePath, cmd);
         }else{
-            log.error("目录：{}, checkout and pull 失败", path);
+            log.error("目录：{}, checkout and pull 失败", partPath);
         }
     }
 
     private void doPackage(String path, String cmd){
         call("cd" + path + "&&" + cmd);
-    }
-
-    private void doPush(String path, String cmd){
-        call("cd" + path + "&&" + cmd);
+//        call("cd" + path + "&&" + cmd);
     }
 
     private void call(String cmd){

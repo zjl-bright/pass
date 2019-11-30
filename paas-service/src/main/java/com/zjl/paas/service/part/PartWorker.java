@@ -7,13 +7,11 @@ import com.zjl.paas.service.util.JGitUtil;
 import io.vertx.core.json.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import me.zjl.boot.annotation.WorkerMapping;
-import org.apache.maven.shared.invoker.*;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.File;
-import java.util.Collections;
 import java.util.Objects;
 
 /**

@@ -1,6 +1,5 @@
 package com.zjl.paas.service.project;
 
-import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -9,7 +8,6 @@ import me.zjl.boot.annotation.RequestMapping;
 import me.zjl.boot.utils.ResponseUtil;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.Objects;
 
