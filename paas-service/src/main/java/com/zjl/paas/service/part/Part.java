@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import java.util.List;
+
 /**
  * TODO
  *
@@ -23,5 +25,11 @@ public class Part extends BaseEntity {
 
     private String gitPath;
 
+    private String path;
+
     private String cmd;
+
+    private List<Env> envs;
+
+    private List<Module> modules;
 }

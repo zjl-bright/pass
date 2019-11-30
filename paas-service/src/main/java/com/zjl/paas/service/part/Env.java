@@ -1,6 +1,5 @@
-package com.zjl.paas.service.env;
+package com.zjl.paas.service.part;
 
-import com.zjl.paas.common.model.BaseEntity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -15,11 +14,11 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class Env extends BaseEntity {
-
-    private String projectId;
+public class Env{
 
     private String name;
 
     private String branchName;
+
+    private String ip;
 }

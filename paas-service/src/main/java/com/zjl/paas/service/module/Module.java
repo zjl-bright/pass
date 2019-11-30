@@ -21,9 +21,9 @@ public class Module extends BaseEntity {
 
     private String name;
 
-    private String targetPath;
+    private String target;
 
-    private String dirPath;
+    private String path;
 
     private String cmd;
 }

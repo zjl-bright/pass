@@ -71,5 +71,10 @@
             <artifactId>org.eclipse.jgit</artifactId>
             <version>5.5.1.201910021850-r</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.maven.shared</groupId>
+            <artifactId>maven-invoker</artifactId>
+            <version>3.0.1</version>
+        </dependency>
     </dependencies>
 </project>

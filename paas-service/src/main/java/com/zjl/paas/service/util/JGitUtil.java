@@ -59,8 +59,8 @@ public class JGitUtil {
         return true;
     }
 
-    public boolean checkout(String local_config, String branchName){
-        try(Git git = Git.open( new File(local_config))){
+    public boolean checkoutAndPull(String local_config, String branchName){
+        try(Git git = Git.open( new File(local_config + ".git"))){
             if(branchNameExist(git, branchName)){
                 git.checkout().setCreateBranch(false).setName(branchName).call();
             }else{
@@ -69,7 +69,7 @@ public class JGitUtil {
 
             git.pull().setCredentialsProvider(provider).call();
         }catch (Exception e) {
-            log.error("Git checkout failed by : {}", Throwables.getStackTraceAsString(e));
+            log.error("JGitUtil checkoutAndPull failed, cause by : {}", Throwables.getStackTraceAsString(e));
             return false;
         }
         return true;

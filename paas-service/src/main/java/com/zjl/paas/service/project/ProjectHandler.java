@@ -1,19 +1,17 @@
 package com.zjl.paas.service.project;
 
-import com.zjl.paas.common.enums.Env;
-import com.zjl.paas.common.model.Response;
 import io.vertx.core.MultiMap;
-import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import me.zjl.boot.annotation.RequestMapping;
-import org.apache.commons.lang3.StringUtils;
+import me.zjl.boot.utils.ResponseUtil;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import java.util.Objects;
 
 /**
  * TODO
@@ -27,63 +25,57 @@ import javax.inject.Singleton;
 public class ProjectHandler{
 
     @Inject
-    private Vertx vertx;
-
-    @Inject
     private ProjectService projectService;
-
-    @Inject
-    @Named("project.dir_path")
-    private String dir_path;
 
     @RequestMapping()
     public void find(RoutingContext context){
         projectService.find(context, new JsonObject());
     }
 
+    //TODO 是否要删除该项目的所有配置，比如已经下拉的代码（实际的文件）还有对应的 part和module
     @RequestMapping(method = HttpMethod.DELETE)
-    public void delete(RoutingContext context, MultiMap map){
-        String id = map.get("id");
-        if(StringUtils.isBlank(id)){
-            context.response().end(Response.ok("id不可为空").encodePrettily());
+    public void delete(RoutingContext context, String _id){
+        if(ResponseUtil.endIfParamBlank(context, _id, "_id不可为空")){
             return;
         }
-        projectService.remove(context, new JsonObject().put("_id", id));
+        projectService.remove(context, new JsonObject().put("_id", _id));
     }
 
     @RequestMapping(method = HttpMethod.POST)
     public void save(RoutingContext context, JsonObject jsonObject){
-        String dirName = jsonObject.getString("dirName");
-        String name = jsonObject.getString("name");
-
-        if(StringUtils.isBlank(dirName)){
-            context.response().end(Response.ok("dirName不可为空").encodePrettily());
+        String dir = jsonObject.getString("dir");
+        if(ResponseUtil.endIfParamBlank(context, dir, "dir不可为空")){
             return;
-        }
-        if(StringUtils.isBlank(name)){
-            context.response().end(Response.ok("name不可为空").encodePrettily());
-            return;
-        }
-        String dirPath = dir_path + "/" + dirName;
-        jsonObject.put("dirPath", dirPath);
-        projectService.save(context, jsonObject, res -> {
-            Env[] envs = Env.values();
-            int length = envs.length;
-            JsonArray jsonArray = new JsonArray();
-            for(int i = 0; i < length; i++){
-                jsonArray.add(new JsonObject()
-                        .put("projectId", res)
-                        .put("name", envs[i].env())
-                        .put("branchName", envs[i].branch()));
+        }else{
+            String temp = dir.replace("/", "");
+            if(ResponseUtil.endIfExpressionTrue(context, temp.length()==0, "dir不可没有目录")){
+                return;
             }
-            vertx.eventBus().send("env.init", jsonArray);
-        });
-    }
+        }
+        String name = jsonObject.getString("name");
+        if(ResponseUtil.endIfParamBlank(context, name, "name不可为空")){
+            return;
+        }
+        JsonArray types = jsonObject.getJsonArray("types");
+        if(Objects.nonNull(types)){
+            if(!types.contains("生产")){
+                types.add("生产");
+            }
+        }else{
+            jsonObject.put("types", new JsonArray().add("生产"));
+        }
 
-    @RequestMapping(method = HttpMethod.PUT)
-    public void update(RoutingContext context, JsonObject jsonObject){
-        String dirPath = dir_path + "/" + jsonObject.getString("dirName");
-        jsonObject.put("dirPath", dirPath);
+        String path;
+        if(dir.startsWith("/")){
+            path = System.getProperty("user.dir") + dir;
+        }else{
+            path = System.getProperty("user.dir") + "/" + dir;
+        }
+        if(path.endsWith("/")){
+            path = path.substring(0, path.lastIndexOf("/"));
+        }
+        jsonObject.put("path", path);
+
         projectService.save(context, jsonObject);
     }
 }
