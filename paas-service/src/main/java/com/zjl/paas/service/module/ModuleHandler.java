@@ -1,7 +1,6 @@
 package com.zjl.paas.service.module;
 
 import com.zjl.paas.service.part.PartService;
-import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
@@ -32,22 +31,20 @@ public class ModuleHandler {
     @Inject
     private Vertx vertx;
 
-    @RequestMapping()
-    public void find(RoutingContext context, MultiMap map){
-        String partId = map.get("partId");
+    @RequestMapping(value = "/:partId")
+    public void find(RoutingContext context, String partId){
         if(ResponseUtil.endIfParamBlank(context, partId, "分部id不可为空")){
             return;
         }
         moduleService.find(context, new JsonObject().put("partId", partId));
     }
 
-    @RequestMapping(method = HttpMethod.DELETE)
-    public void delete(RoutingContext context, MultiMap map){
-        String id = map.get("id");
-        if(ResponseUtil.endIfParamBlank(context, id, "入参id不可为空")){
+    @RequestMapping(value = "/:_id", method = HttpMethod.DELETE)
+    public void delete(RoutingContext context, String _id){
+        if(ResponseUtil.endIfParamBlank(context, _id, "入参id不可为空")){
             return;
         }
-        moduleService.remove(context, new JsonObject().put("_id", id));
+        moduleService.remove(context, new JsonObject().put("_id", _id));
     }
 
     @RequestMapping(method = HttpMethod.POST)

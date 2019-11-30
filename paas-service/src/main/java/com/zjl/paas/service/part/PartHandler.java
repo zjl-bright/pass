@@ -4,7 +4,6 @@ import com.zjl.paas.service.module.ModuleService;
 import com.zjl.paas.service.project.ProjectService;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
-import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
@@ -42,7 +41,7 @@ public class PartHandler {
     @Inject
     private Vertx vertx;
 
-    @RequestMapping()
+    @RequestMapping(value = "/:projectId")
     public void find(RoutingContext context, String projectId){
         if(ResponseUtil.endIfParamBlank(context, projectId, "projectId不可为空")){
             return;
@@ -74,7 +73,7 @@ public class PartHandler {
     }
 
     //TODO 是否要删除该项目的所有配置，比如已经下拉的代码（实际的文件）还有对应的 module
-    @RequestMapping(method = HttpMethod.DELETE)
+    @RequestMapping(value = "/:_id", method = HttpMethod.DELETE)
     public void delete(RoutingContext context, String _id){
         if(ResponseUtil.endIfParamBlank(context, _id, "_id不可为空")){
             return;
@@ -137,7 +136,7 @@ public class PartHandler {
         });
     }
 
-    @RequestMapping("/clone")
+    @RequestMapping("/clone/:_id")
     public void clone(RoutingContext context, String _id){
         if(ResponseUtil.endIfParamBlank(context, _id, "_id不可为空")){
             return;
@@ -147,7 +146,7 @@ public class PartHandler {
         });
     }
 
-    @RequestMapping("/package")
+    @RequestMapping("/package/:_id/:branchName")
     public void cmdPackage(RoutingContext context, String _id, String branchName){
         if(ResponseUtil.endIfParamBlank(context, _id, "_id不可为空")){
             return;

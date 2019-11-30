@@ -33,7 +33,7 @@ public class ProjectHandler{
     }
 
     //TODO 是否要删除该项目的所有配置，比如已经下拉的代码（实际的文件）还有对应的 part和module
-    @RequestMapping(method = HttpMethod.DELETE)
+    @RequestMapping(value = "/:_id", method = HttpMethod.DELETE)
     public void delete(RoutingContext context, String _id){
         if(ResponseUtil.endIfParamBlank(context, _id, "_id不可为空")){
             return;

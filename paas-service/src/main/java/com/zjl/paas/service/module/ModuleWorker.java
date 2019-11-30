@@ -10,7 +10,6 @@ import me.zjl.boot.annotation.WorkerMapping;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.io.File;
 
 /**
  * TODO
@@ -35,13 +34,13 @@ public class ModuleWorker {
         String branchName = jsonObject.getString("branchName");
         String partId = jsonObject.getString("partId");
 
-        partService.findone(new JsonObject().put("_id", partId), part -> {
-            String path = part.getString("path");
+//        partService.findone(new JsonObject().put("_id", partId), part -> {
+//            String path = part.getString("path");
+//
+//
+//        });
 
-
-        });
-
-
+        return true;
 
     }
 
