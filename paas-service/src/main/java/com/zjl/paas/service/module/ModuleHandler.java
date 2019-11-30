@@ -39,12 +39,12 @@ public class ModuleHandler {
         moduleService.find(context, new JsonObject().put("partId", partId));
     }
 
-    @RequestMapping(value = "/:_id", method = HttpMethod.DELETE)
-    public void delete(RoutingContext context, String _id){
-        if(ResponseUtil.endIfParamBlank(context, _id, "入参id不可为空")){
+    @RequestMapping(value = "/:id", method = HttpMethod.DELETE)
+    public void delete(RoutingContext context, String id){
+        if(ResponseUtil.endIfParamBlank(context, id, "id不可为空")){
             return;
         }
-        moduleService.remove(context, new JsonObject().put("_id", _id));
+        moduleService.remove(context, new JsonObject().put("_id", id));
     }
 
     @RequestMapping(method = HttpMethod.POST)
@@ -82,7 +82,7 @@ public class ModuleHandler {
         if(ResponseUtil.endIfParamBlank(context, branchName, "分支名不可为空")){
             return;
         }
-        if(ResponseUtil.endIfParamBlank(context, moudleId, "id不可为空")){
+        if(ResponseUtil.endIfParamBlank(context, moudleId, "moudleId不可为空")){
             return;
         }
         moduleService.findOne(context, new JsonObject().put("_id", moudleId), res ->{

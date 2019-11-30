@@ -51,11 +51,10 @@ public class PartHandler {
             partService.find(new JsonObject().put("projectId", projectId), res -> {
                 promise.complete(res);
             });
-        }).compose(v -> {
-            List<JsonObject> parts = (List<JsonObject>)v;
-
+        }).compose(v -> Future.future(promise -> {
+            List<JsonObject> parts = (List<JsonObject>) v;
             List<Future> list = new ArrayList();
-            for(JsonObject part : parts){
+            for (JsonObject part : parts) {
                 list.add(Future.future(promise1 -> {
                     String partId = part.getString("_id");
                     moduleService.find(new JsonObject().put("partId", partId), res -> {
@@ -68,17 +67,16 @@ public class PartHandler {
             CompositeFuture.all(list).setHandler(ar -> {
                 ResponseUtil.end(context, ar, parts);
             });
-            return Future.future();
-        });
+        }));
     }
 
     //TODO 是否要删除该项目的所有配置，比如已经下拉的代码（实际的文件）还有对应的 module
-    @RequestMapping(value = "/:_id", method = HttpMethod.DELETE)
-    public void delete(RoutingContext context, String _id){
-        if(ResponseUtil.endIfParamBlank(context, _id, "_id不可为空")){
+    @RequestMapping(value = "/:id", method = HttpMethod.DELETE)
+    public void delete(RoutingContext context, String id){
+        if(ResponseUtil.endIfParamBlank(context, id, "id不可为空")){
             return;
         }
-        partService.remove(context, new JsonObject().put("_id", _id));
+        partService.remove(context, new JsonObject().put("_id", id));
     }
 
     @RequestMapping(method = HttpMethod.POST)
@@ -136,25 +134,25 @@ public class PartHandler {
         });
     }
 
-    @RequestMapping("/clone/:_id")
-    public void clone(RoutingContext context, String _id){
-        if(ResponseUtil.endIfParamBlank(context, _id, "_id不可为空")){
+    @RequestMapping("/clone/:id")
+    public void clone(RoutingContext context, String id){
+        if(ResponseUtil.endIfParamBlank(context, id, "id不可为空")){
             return;
         }
-        partService.findOne(context, new JsonObject().put("_id", _id), res -> {
+        partService.findOne(context, new JsonObject().put("_id", id), res -> {
             vertx.eventBus().send("part.clone", res);
         });
     }
 
-    @RequestMapping("/package/:_id/:branchName")
-    public void cmdPackage(RoutingContext context, String _id, String branchName){
-        if(ResponseUtil.endIfParamBlank(context, _id, "_id不可为空")){
+    @RequestMapping("/package/:id/:branchName")
+    public void cmdPackage(RoutingContext context, String id, String branchName){
+        if(ResponseUtil.endIfParamBlank(context, id, "id不可为空")){
             return;
         }
         if(ResponseUtil.endIfParamBlank(context, branchName, "branchName不可为空")){
             return;
         }
-        partService.findOne(context, new JsonObject().put("_id", _id), res -> {
+        partService.findOne(context, new JsonObject().put("_id", id), res -> {
             vertx.eventBus().send("part.cmdPackage", res.put("branchName", branchName));
         });
     }
