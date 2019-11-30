@@ -138,27 +138,24 @@ public class PartHandler {
     }
 
     @RequestMapping("/clone")
-    public void clone(RoutingContext context, MultiMap map){
-        String id = map.get("_id");
-        if(ResponseUtil.endIfParamBlank(context, id, "_id不可为空")){
+    public void clone(RoutingContext context, String _id){
+        if(ResponseUtil.endIfParamBlank(context, _id, "_id不可为空")){
             return;
         }
-        partService.findOne(context, new JsonObject().put("_id", id), res -> {
+        partService.findOne(context, new JsonObject().put("_id", _id), res -> {
             vertx.eventBus().send("part.clone", res);
         });
     }
 
     @RequestMapping("/package")
-    public void cmdPackage(RoutingContext context, MultiMap map){
-        String id = map.get("_id");
-        if(ResponseUtil.endIfParamBlank(context, id, "_id不可为空")){
+    public void cmdPackage(RoutingContext context, String _id, String branchName){
+        if(ResponseUtil.endIfParamBlank(context, _id, "_id不可为空")){
             return;
         }
-        String branchName = map.get("branchName");
         if(ResponseUtil.endIfParamBlank(context, branchName, "branchName不可为空")){
             return;
         }
-        partService.findOne(context, new JsonObject().put("_id", id), res -> {
+        partService.findOne(context, new JsonObject().put("_id", _id), res -> {
             vertx.eventBus().send("part.cmdPackage", res.put("branchName", branchName));
         });
     }
