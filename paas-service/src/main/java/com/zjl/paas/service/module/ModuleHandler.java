@@ -1,6 +1,7 @@
 package com.zjl.paas.service.module;
 
 import com.zjl.paas.service.part.PartService;
+import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
@@ -65,28 +66,38 @@ public class ModuleHandler {
         if(ResponseUtil.endIfParamBlank(context, cmd, "打包命令不可为空")){
             return;
         }
+
         partService.findOne(context, new JsonObject().put("_id", partId), res -> {
             String path = res.getString("path");
+            String targetPath;
             if(target.startsWith("/")){
-                path = path + target;
+                targetPath = path + target;
             }else{
-                path = path + "/" + target;
+                targetPath = path + "/" + target;
             }
-            moduleService.save(context, jsonObject.put("path", path));
+            String modulePath = targetPath.substring(0, targetPath.lastIndexOf("/"));
+            moduleService.save(context, jsonObject.put("targetPath", targetPath).put("modulePath", modulePath));
         });
-
     }
 
-    @RequestMapping("/package/:branchName/:moudleId")
-    public void cmdpackage(RoutingContext context, String branchName, String moudleId){
-        if(ResponseUtil.endIfParamBlank(context, branchName, "分支名不可为空")){
-            return;
-        }
+    @RequestMapping("/package/:moudleId")
+    public void cmdpackage(RoutingContext context, String moudleId, MultiMap map){
         if(ResponseUtil.endIfParamBlank(context, moudleId, "moudleId不可为空")){
             return;
         }
+        String branchName = map.get("branchName");
+        if(ResponseUtil.endIfParamBlank(context, branchName, "分支名不可为空")){
+            return;
+        }
+        String senv = map.get("env");
+        if(ResponseUtil.endIfParamBlank(context, senv, "env不可为空")){
+            return;
+        }
+        JsonObject env = new JsonObject(senv);
+
         moduleService.findOne(context, new JsonObject().put("_id", moudleId), res ->{
             res.put("branchName", branchName);
+            res.mergeIn(env);
             vertx.eventBus().send("module.cmdpackage", res);
         });
     }

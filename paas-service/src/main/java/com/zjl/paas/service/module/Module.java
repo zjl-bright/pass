@@ -23,7 +23,9 @@ public class Module extends BaseEntity {
 
     private String target;
 
-    private String path;
+    private String targetPath;
+
+    private String modulepath;
 
     private String cmd;
 }

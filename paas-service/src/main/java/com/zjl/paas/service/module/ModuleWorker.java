@@ -10,6 +10,8 @@ import me.zjl.boot.annotation.WorkerMapping;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * TODO
@@ -29,35 +31,47 @@ public class ModuleWorker {
     @Inject
     private JGitUtil jGit;
 
+    private DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+
     @WorkerMapping("cmdPackage")
     public Boolean cmdPackage(JsonObject jsonObject){
         String branchName = jsonObject.getString("branchName");
         String partId = jsonObject.getString("partId");
-        String modulePath = jsonObject.getString("path");
+        String modulePath = jsonObject.getString("modulePath");
+        String targetPath = jsonObject.getString("targetPath");
         String cmd = jsonObject.getString("cmd");
 
         partService.findOne(new JsonObject().put("_id", partId), part -> {
             String partPath = part.getString("path");
-            start(partPath, branchName, modulePath, cmd);
-
+            start(partPath, branchName, modulePath, cmd, targetPath);
         });
-
         return true;
-
     }
 
-    public void start(String partPath, String branchName, String modulePath, String cmd){
+    public void start(String partPath, String branchName, String modulePath, String cmd, String targetPath){
         if(jGit.checkoutAndPull(partPath, branchName)){
             log.info("目录：{}, checkout and pull 成功", partPath);
+
             doPackage(modulePath, cmd);
+            String tag = tag(branchName);
+            doPackage(targetPath, "docker build -t git.hshbao.com:5000/" + tag + " -f" + modulePath + "/Dockerfile .");
+            doPackage("docker push git.hshbao.com:5000/" + tag);
         }else{
             log.error("目录：{}, checkout and pull 失败", partPath);
         }
     }
 
+    private String tag(String branchName){
+        LocalDateTime localDateTime = LocalDateTime.now();
+        return branchName + "_" + df.format(localDateTime);
+    }
+
     private void doPackage(String path, String cmd){
-        call("cd" + path + "&&" + cmd);
-//        call("cd" + path + "&&" + cmd);
+        call("cd " + path + " && " + cmd);
+    }
+
+    private void doPackage(String cmd){
+        call(cmd);
     }
 
     private void call(String cmd){

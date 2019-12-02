@@ -93,6 +93,7 @@ public class PartHandler {
         if(ResponseUtil.endIfParamBlank(context, gitPath, "gitPath不可为空")){
             return;
         }
+
         String gitName = gitPath.substring(gitPath.lastIndexOf("/"), gitPath.lastIndexOf("."));
 
         projectService.findOne(context, new JsonObject().put("_id", projectId), project -> {
@@ -118,6 +119,7 @@ public class PartHandler {
         }
 
         partService.findOne(context, new JsonObject().put("_id", id), part -> {
+            part.mergeIn(jsonObject);
             if(jsonObject.containsKey("gitPath")){
                 String gitPath = jsonObject.getString("gitPath");
                 if(ResponseUtil.endIfParamBlank(context, gitPath, "gitPath不可为空")){
@@ -129,7 +131,7 @@ public class PartHandler {
 
                 part.put("path", dir + gitName);
             }
-            part.mergeIn(jsonObject);
+
             partService.save(context, part);
         });
     }

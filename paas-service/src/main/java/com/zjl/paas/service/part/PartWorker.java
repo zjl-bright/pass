@@ -41,24 +41,22 @@ public class PartWorker {
         String gitPath = jsonObject.getString("gitPath");
         String path = jsonObject.getString("path");
 
-
-        String projectPath = path.substring(0, path.lastIndexOf("/"));
-        File file = new File(projectPath);
+        File file = new File(path);
         if(file.exists()){
             if(!deleteFile(file.listFiles())){
-                log.error("part：{}, gitpath：{}, clone到本地目录：{}, 删除旧文件失败", jsonObject.getString("name"), gitPath, projectPath);
+                log.error("part：{}, gitpath：{}, clone到本地目录：{}, 删除旧文件失败", jsonObject.getString("name"), gitPath, path);
                 return;
             }
         }else{
             if(!file.mkdirs()){
-                log.error("part：{}, gitpath：{}, clone到本地目录：{}, 创建新文件夹失败", jsonObject.getString("name"), gitPath, projectPath);
+                log.error("part：{}, gitpath：{}, clone到本地目录：{}, 创建新文件夹失败", jsonObject.getString("name"), gitPath, path);
                 return;
             }
         }
         if(jGit.cloneRepository(gitPath, file.getAbsolutePath())){
-            log.info("part：{}, gitpath：{}, clone到本地目录：{}, 成功", jsonObject.getString("name"), gitPath, projectPath);
+            log.info("part：{}, gitpath：{}, clone到本地目录：{}, 成功", jsonObject.getString("name"), gitPath, path);
         }else{
-            log.error("part：{}, gitpath：{}, clone到本地目录：{}, 失败", jsonObject.getString("name"), gitPath, projectPath);
+            log.error("part：{}, gitpath：{}, clone到本地目录：{}, 失败", jsonObject.getString("name"), gitPath, path);
         }
     }
 
