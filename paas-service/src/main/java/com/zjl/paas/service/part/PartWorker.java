@@ -1,8 +1,10 @@
 package com.zjl.paas.service.part;
 
 import com.google.common.base.Throwables;
-import com.zjl.paas.service.project.ProjectService;
-import com.zjl.paas.service.thread.CommandWaitForThread;
+import com.google.common.collect.Lists;
+import com.zjl.paas.service.module.ModuleHandler;
+import com.zjl.paas.service.module.ModuleService;
+import com.zjl.paas.service.module.ModuleWorker;
 import com.zjl.paas.service.util.JGitUtil;
 import io.vertx.core.json.JsonObject;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +14,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.File;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -27,14 +30,17 @@ import java.util.Objects;
 public class PartWorker {
 
     @Inject
-    private ProjectService projectService;
-
-    @Inject
     private JGitUtil jGit;
 
     @Inject
     @Named("package_sh")
     private String sh;
+
+    @Inject
+    private ModuleService moduleService;
+
+    @Inject
+    private ModuleWorker moduleWorker;
 
     @WorkerMapping("clone")
     public void clone(JsonObject jsonObject){
@@ -85,66 +91,24 @@ public class PartWorker {
     @WorkerMapping("cmdPackage")
     public void cmdPackage(JsonObject jsonObject){
         String branchName = jsonObject.getString("branchName");
+        String id = jsonObject.getString("_id");
         String path = jsonObject.getString("path");
-        String cmd = jsonObject.getString("cmd");
+        String packageCmd = jsonObject.getString("cmd");
+        Boolean isDeploy = jsonObject.getBoolean("isDeploy");
+        String ip = jsonObject.getString("ip");
+        moduleService.find(new JsonObject().put("partId", id), res -> {
+            List<String> modulePaths = Lists.newArrayList();
+            List<String> targetPaths = Lists.newArrayList();
+            List<String> dockerFilePaths = Lists.newArrayList();
+            res.forEach(module -> {
+                modulePaths.add(module.getString("modulePath"));
+                targetPaths.add(module.getString("targetPath"));
+                dockerFilePaths.add(module.getString("dockerFilePath"));
+            });
 
-        if(jGit.checkoutAndPull(path, branchName)){
-            log.info("part：{}, 本地目录：{}, checkout and pull 成功", jsonObject.getString("name"), path);
-            doPackage(path, cmd);
-        }else{
-            log.error("part：{}, 本地目录：{}, checkout and pull 失败", jsonObject.getString("name"), path);
-        }
-    }
-
-    private void doPackage(String path, String cmd){
-        call("cd" + path + "&&" + cmd);
-        call("cd" + path + "&&" + cmd);
-
-    }
-
-    private void call(String cmd){
-        try {
-            //启动独立线程等待process执行完成
-            CommandWaitForThread commandThread = new CommandWaitForThread(cmd);
-            commandThread.start();
-
-            while (!commandThread.isFinish()) {
-                log.info("命令：{}, 还未执行完毕,10s后重新探测", cmd);
-                Thread.sleep(10000);
-            }
-
-            //检查脚本执行结果状态码
-            if(commandThread.getExitValue() != 0){
-                log.error("命令：{}, 执行失败, exitValue = {}", cmd, commandThread.getExitValue());
-                return;
-            }
-            log.info("命令：{}, 执行成功, exitValue = {}", cmd, commandThread.getExitValue());
-        }catch (Exception e){
-            log.error("命令：{}, 执行失败, cause by : ", cmd, Throwables.getStackTraceAsString(e));
-            return;
-        }
-    }
-
-    private void callScript(String script, String[] args) throws Exception{
-        try {
-            //启动独立线程等待process执行完成
-            CommandWaitForThread commandThread = new CommandWaitForThread("sh " + script, args);
-            commandThread.start();
-
-            while (!commandThread.isFinish()) {
-                log.info("shell " + script + "还未执行完毕,10s后重新探测");
-                Thread.sleep(10000);
-            }
-
-            //检查脚本执行结果状态码
-            if(commandThread.getExitValue() != 0){
-                throw new RuntimeException("shell " + script + "执行失败,exitValue = " + commandThread.getExitValue());
-            }
-            log.info("shell " + script + "执行成功,exitValue = " + commandThread.getExitValue());
-        }
-        catch (Exception e){
-            throw new Exception("执行脚本发生异常,脚本路径" + script, e);
-        }
+            moduleWorker.start(path, branchName, path, packageCmd, modulePaths, targetPaths, dockerFilePaths,
+                    isDeploy, ip);
+        });
     }
 
 }

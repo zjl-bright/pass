@@ -4,6 +4,7 @@ import com.zjl.paas.service.module.ModuleService;
 import com.zjl.paas.service.project.ProjectService;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
+import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
@@ -146,16 +147,27 @@ public class PartHandler {
         });
     }
 
-    @RequestMapping("/package/:id/:branchName")
-    public void cmdPackage(RoutingContext context, String id, String branchName){
+    @RequestMapping("/package")
+    public void cmdPackage(RoutingContext context, MultiMap map){
+
+        String id = map.get("_id");
         if(ResponseUtil.endIfParamBlank(context, id, "id不可为空")){
             return;
         }
-        if(ResponseUtil.endIfParamBlank(context, branchName, "branchName不可为空")){
+        String branchName = map.get("branchName");
+        if(ResponseUtil.endIfParamBlank(context, branchName, "分支名不可为空")){
             return;
         }
+        String senv = map.get("env");
+        if(ResponseUtil.endIfParamBlank(context, senv, "env不可为空")){
+            return;
+        }
+        JsonObject env = new JsonObject(senv);
+
         partService.findOne(context, new JsonObject().put("_id", id), res -> {
-            vertx.eventBus().send("part.cmdPackage", res.put("branchName", branchName));
+            res.put("branchName", branchName);
+            res.mergeIn(env);
+            vertx.eventBus().send("part.cmdPackage", res);
         });
     }
 }

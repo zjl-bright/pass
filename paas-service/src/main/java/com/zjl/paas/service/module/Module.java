@@ -27,5 +27,7 @@ public class Module extends BaseEntity {
 
     private String modulepath;
 
+    private String dockerFilePath;
+
     private String cmd;
 }

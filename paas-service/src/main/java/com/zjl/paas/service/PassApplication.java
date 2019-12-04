@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 public class PassApplication {
 
   public static void main(String[] args) {
-    VertxBoot.run(Vertx.vertx(new VertxOptions().setMaxWorkerExecuteTime(TimeUnit.MINUTES.toMillis(200)))
-            , PassApplication.class, args);
+    Vertx vertx = Vertx.vertx(new VertxOptions().setMaxWorkerExecuteTime(TimeUnit.MINUTES.toNanos(20)));
+    VertxBoot.run(vertx, PassApplication.class, args);
   }
 }

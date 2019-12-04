@@ -76,12 +76,15 @@ public class ModuleHandler {
                 targetPath = path + "/" + target;
             }
             String modulePath = targetPath.substring(0, targetPath.lastIndexOf("/"));
-            moduleService.save(context, jsonObject.put("targetPath", targetPath).put("modulePath", modulePath));
+            String dockerFilePath = modulePath + "/Dockerfile";
+            moduleService.save(context, jsonObject.put("targetPath", targetPath)
+                    .put("modulePath", modulePath).put("dockerFilePath", dockerFilePath));
         });
     }
 
-    @RequestMapping("/package/:moudleId")
-    public void cmdpackage(RoutingContext context, String moudleId, MultiMap map){
+    @RequestMapping("/package")
+    public void cmdpackage(RoutingContext context, MultiMap map){
+        String moudleId = map.get("moudleId");
         if(ResponseUtil.endIfParamBlank(context, moudleId, "moudleId不可为空")){
             return;
         }
