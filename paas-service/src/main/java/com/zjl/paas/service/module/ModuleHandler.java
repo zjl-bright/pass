@@ -92,16 +92,13 @@ public class ModuleHandler {
         if(ResponseUtil.endIfParamBlank(context, branchName, "分支名不可为空")){
             return;
         }
-        String senv = map.get("env");
-        if(ResponseUtil.endIfParamBlank(context, senv, "env不可为空")){
+        String ip = map.get("ip");
+        if(ResponseUtil.endIfParamBlank(context, ip, "ip不可为空")){
             return;
         }
-        JsonObject env = new JsonObject(senv);
 
         moduleService.findOne(context, new JsonObject().put("_id", moudleId), res ->{
-            res.put("branchName", branchName);
-            res.mergeIn(env);
-            vertx.eventBus().send("module.cmdpackage", res);
+            vertx.eventBus().send("module.cmdpackage", res.put("branchName", branchName).put("ip", ip));
         });
     }
 }

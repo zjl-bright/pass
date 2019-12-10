@@ -93,9 +93,11 @@ public class PartHandler {
         if(ResponseUtil.endIfParamBlank(context, gitPath, "gitPath不可为空")){
             return;
         }
-        // TODO  / .
-        String gitName = gitPath.substring(gitPath.lastIndexOf("/"), gitPath.lastIndexOf("."));
+        if(ResponseUtil.endIfExpressionTrue(context, !gitPath.contains("/")||!gitPath.contains("."), "代码库地址格式不正确") ){
+            return;
+        }
 
+        String gitName = gitPath.substring(gitPath.lastIndexOf("/"), gitPath.lastIndexOf("."));
         projectService.findOne(context, new JsonObject().put("_id", projectId), project -> {
             String projectPath = project.getString("path");
             jsonObject.put("path", projectPath + gitName);
@@ -157,16 +159,13 @@ public class PartHandler {
         if(ResponseUtil.endIfParamBlank(context, branchName, "分支名不可为空")){
             return;
         }
-        String senv = map.get("env");
-        if(ResponseUtil.endIfParamBlank(context, senv, "env不可为空")){
+        String ip = map.get("ip");
+        if(ResponseUtil.endIfParamBlank(context, ip, "ip不可为空")){
             return;
         }
-        JsonObject env = new JsonObject(senv);
 
         partService.findOne(context, new JsonObject().put("_id", id), res -> {
-            res.put("branchName", branchName);
-            res.mergeIn(env);
-            vertx.eventBus().send("part.cmdPackage", res);
+            vertx.eventBus().send("part.cmdPackage", res.put("branchName", branchName).put("ip", ip));
         });
     }
 }

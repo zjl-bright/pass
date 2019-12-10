@@ -1,7 +1,6 @@
 package com.zjl.paas.service.project;
 
 import io.vertx.core.http.HttpMethod;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import me.zjl.boot.annotation.RequestMapping;
@@ -9,7 +8,6 @@ import me.zjl.boot.utils.ResponseUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.Objects;
 
 /**
  * TODO
@@ -53,14 +51,6 @@ public class ProjectHandler{
         String name = jsonObject.getString("name");
         if(ResponseUtil.endIfParamBlank(context, name, "name不可为空")){
             return;
-        }
-        JsonArray types = jsonObject.getJsonArray("types");
-        if(Objects.nonNull(types)){
-            if(!types.contains("生产")){
-                types.add("生产");
-            }
-        }else{
-            jsonObject.put("types", new JsonArray().add("生产"));
         }
 
         String path;

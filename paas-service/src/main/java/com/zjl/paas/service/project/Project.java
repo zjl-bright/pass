@@ -5,8 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.util.List;
-
 /**
  * TODO
  *
@@ -24,8 +22,6 @@ public class Project extends BaseEntity {
     private String dir;
 
     private String path;
-
-    private List<String> types;
 
     private String logo;
 
