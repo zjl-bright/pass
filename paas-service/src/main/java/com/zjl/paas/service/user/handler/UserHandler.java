@@ -6,6 +6,7 @@ import com.zjl.paas.service.util.EncryptUtil;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
+import me.zjl.boot.annotation.NoProtected;
 import me.zjl.boot.annotation.RequestMapping;
 
 import javax.inject.Inject;
@@ -19,8 +20,9 @@ import java.util.Objects;
  * @Date: 2019-09-21
  * @Version: 1.0
  */
-@RequestMapping("/user")
 @Singleton
+@NoProtected
+@RequestMapping("/user")
 public class UserHandler{
 
   @Inject

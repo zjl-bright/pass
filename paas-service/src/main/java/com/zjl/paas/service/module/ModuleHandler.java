@@ -19,8 +19,8 @@ import javax.inject.Singleton;
  * @Date: 2019-11-25
  * @Version: 1.0
  */
-@RequestMapping("/module")
 @Singleton
+@RequestMapping("/module")
 public class ModuleHandler {
 
     @Inject

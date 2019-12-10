@@ -18,8 +18,8 @@ import java.util.Objects;
  * @Date: 2019-09-21
  * @Version: 1.0
  */
-@RequestMapping("/project")
 @Singleton
+@RequestMapping("/project")
 public class ProjectHandler{
 
     @Inject

@@ -24,9 +24,9 @@ import java.util.concurrent.CompletableFuture;
  * @Date: 2019-11-21
  * @Version: 1.0
  */
-@WorkerMapping("module")
-@Singleton
 @Slf4j
+@Singleton
+@WorkerMapping("module")
 public class ModuleWorker {
 
     @Inject
@@ -39,8 +39,6 @@ public class ModuleWorker {
 
     @WorkerMapping("cmdPackage")
     public Boolean cmdPackage(JsonObject jsonObject){
-        String partId = jsonObject.getString("partId");
-
         String branchName = jsonObject.getString("branchName");
         String modulePath = jsonObject.getString("modulePath");
         String cmd = jsonObject.getString("cmd");
@@ -49,7 +47,7 @@ public class ModuleWorker {
         Boolean isDeploy = jsonObject.getBoolean("isDeploy");
         String ip = jsonObject.getString("ip");
 
-        partService.findOne(new JsonObject().put("_id", partId), part -> {
+        partService.findOne(new JsonObject().put("_id", jsonObject.getString("partId")), part -> {
             String partPath = part.getString("path");
             start(partPath, branchName, modulePath, cmd, Lists.newArrayList(modulePath), Lists.newArrayList(targetPath), Lists.newArrayList(dockerFilePath), isDeploy, ip);
         });

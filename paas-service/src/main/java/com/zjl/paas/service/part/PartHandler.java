@@ -25,9 +25,9 @@ import java.util.List;
  * @Date: 2019-11-25
  * @Version: 1.0
  */
-@RequestMapping("/part")
-@Singleton
 @Slf4j
+@Singleton
+@RequestMapping("/part")
 public class PartHandler {
 
     @Inject
@@ -47,7 +47,6 @@ public class PartHandler {
         if(ResponseUtil.endIfParamBlank(context, projectId, "projectId不可为空")){
             return;
         }
-
         Future.future(promise -> {
             partService.find(new JsonObject().put("projectId", projectId), res -> {
                 promise.complete(res);
@@ -94,7 +93,7 @@ public class PartHandler {
         if(ResponseUtil.endIfParamBlank(context, gitPath, "gitPath不可为空")){
             return;
         }
-
+        // TODO  / .
         String gitName = gitPath.substring(gitPath.lastIndexOf("/"), gitPath.lastIndexOf("."));
 
         projectService.findOne(context, new JsonObject().put("_id", projectId), project -> {

@@ -24,11 +24,12 @@ import java.util.Objects;
  * @Date: 2019-11-21
  * @Version: 1.0
  */
-@WorkerMapping("part")
-@Singleton
 @Slf4j
+@Singleton
+@WorkerMapping("part")
 public class PartWorker {
 
+    public static Boolean flag = true;
     @Inject
     private JGitUtil jGit;
 
@@ -91,12 +92,12 @@ public class PartWorker {
     @WorkerMapping("cmdPackage")
     public void cmdPackage(JsonObject jsonObject){
         String branchName = jsonObject.getString("branchName");
-        String id = jsonObject.getString("_id");
         String path = jsonObject.getString("path");
         String packageCmd = jsonObject.getString("cmd");
         Boolean isDeploy = jsonObject.getBoolean("isDeploy");
         String ip = jsonObject.getString("ip");
-        moduleService.find(new JsonObject().put("partId", id), res -> {
+
+        moduleService.find(new JsonObject().put("partId", jsonObject.getString("_id")), res -> {
             List<String> modulePaths = Lists.newArrayList();
             List<String> targetPaths = Lists.newArrayList();
             List<String> dockerFilePaths = Lists.newArrayList();
