@@ -105,7 +105,6 @@ public class PartHandler {
                 vertx.eventBus().send("part.clone", jsonObject);
             });
         });
-
     }
 
     @RequestMapping(method = HttpMethod.PUT)
