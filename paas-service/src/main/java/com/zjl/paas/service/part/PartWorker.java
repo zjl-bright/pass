@@ -1,8 +1,6 @@
 package com.zjl.paas.service.part;
 
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
-import com.zjl.paas.service.module.ModuleHandler;
 import com.zjl.paas.service.module.ModuleService;
 import com.zjl.paas.service.module.ModuleWorker;
 import com.zjl.paas.service.util.JGitUtil;

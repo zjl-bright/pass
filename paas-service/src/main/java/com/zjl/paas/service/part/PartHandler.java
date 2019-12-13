@@ -1,5 +1,6 @@
 package com.zjl.paas.service.part;
 
+import com.google.common.base.Throwables;
 import com.zjl.paas.service.module.ModuleService;
 import com.zjl.paas.service.project.ProjectService;
 import io.vertx.core.CompositeFuture;
@@ -47,25 +48,23 @@ public class PartHandler {
         if(ResponseUtil.endIfParamBlank(context, projectId, "projectId不可为空")){
             return;
         }
-        Future.future(promise -> {
+        Future.<List<JsonObject>>future(promise -> {
             partService.find(new JsonObject().put("projectId", projectId), res -> {
                 promise.complete(res);
             });
         }).compose(v -> Future.future(promise -> {
-            List<JsonObject> parts = (List<JsonObject>) v;
             List<Future> list = new ArrayList();
-            for (JsonObject part : parts) {
+            for (JsonObject part : v) {
                 list.add(Future.future(promise1 -> {
                     String partId = part.getString("_id");
                     moduleService.find(new JsonObject().put("partId", partId), res -> {
                         part.put("modules", res);
                         promise1.complete();
                     });
-
                 }));
             }
             CompositeFuture.all(list).setHandler(ar -> {
-                ResponseUtil.end(context, ar, parts);
+                ResponseUtil.end(context, ar.map(v));
             });
         }));
     }
@@ -76,7 +75,26 @@ public class PartHandler {
         if(ResponseUtil.endIfParamBlank(context, id, "id不可为空")){
             return;
         }
-        partService.remove(context, new JsonObject().put("_id", id));
+//        JsonObject dePart = new JsonObject().put("_id", id);
+//        partService.findOne(context, dePart, partRes -> {
+//            partService.remove(context, dePart, partDeleteRes -> {
+//                if(partDeleteRes.getRemovedCount() > 0){
+//                    moduleService.remove(context, new JsonObject().put("partId", id), moduleRes -> true);
+//                    partRes.forEach(part -> {
+//                        String path = part.getString("path");
+//                        vertx.fileSystem().deleteRecursive(path, true, ar -> {
+//                            if(ar.failed()){
+//                                log.error("delete project: {}，delete file path: {}", id, path, Throwables.getStackTraceAsString(ar.cause()));
+//                            }
+//                        });
+//                    });
+//                }
+//            });
+//        });
+
+        partService.remove(context, new JsonObject().put("_id", id), partRes -> {
+
+        });
     }
 
     @RequestMapping(method = HttpMethod.POST)
@@ -101,7 +119,7 @@ public class PartHandler {
         projectService.findOne(context, new JsonObject().put("_id", projectId), project -> {
             String projectPath = project.getString("path");
             jsonObject.put("path", projectPath + gitName);
-            partService.save(context, jsonObject, part -> {
+            partService.saveWithEnd(context, jsonObject, part -> {
                 vertx.eventBus().send("part.clone", jsonObject);
             });
         });
@@ -133,7 +151,7 @@ public class PartHandler {
                 part.put("path", dir + gitName);
             }
 
-            partService.save(context, part);
+            partService.saveWithEnd(context, part);
         });
     }
 
@@ -142,7 +160,7 @@ public class PartHandler {
         if(ResponseUtil.endIfParamBlank(context, id, "id不可为空")){
             return;
         }
-        partService.findOne(context, new JsonObject().put("_id", id), res -> {
+        partService.findOneWithEnd(context, new JsonObject().put("_id", id), res -> {
             vertx.eventBus().send("part.clone", res);
         });
     }
@@ -163,7 +181,7 @@ public class PartHandler {
             return;
         }
 
-        partService.findOne(context, new JsonObject().put("_id", id), res -> {
+        partService.findOneWithEnd(context, new JsonObject().put("_id", id), res -> {
             vertx.eventBus().send("part.cmdPackage", res.put("branchName", branchName).put("ip", ip));
         });
     }
