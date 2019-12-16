@@ -1,7 +1,6 @@
 package com.zjl.paas.service.part;
 
 import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
 import com.zjl.paas.service.module.ModuleService;
 import com.zjl.paas.service.project.ProjectService;
 import io.vertx.core.CompositeFuture;
@@ -130,8 +129,9 @@ public class PartHandler {
         }
 
         jsonObject.remove("_id");
-        if(!jsonObject.isEmpty()){
+        if(jsonObject.isEmpty()){
             ResponseUtil.end(context, "入参不能只有_id");
+            return;
         }
 
         partService.findOne(context, new JsonObject().put("_id", id), part -> {

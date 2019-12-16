@@ -37,7 +37,7 @@ public class ModuleHandler {
         if(ResponseUtil.endIfParamBlank(context, partId, "分部id不可为空")){
             return;
         }
-        moduleService.find(context, new JsonObject().put("partId", partId));
+        moduleService.findWithEnd(context, new JsonObject().put("partId", partId));
     }
 
     @RequestMapping(value = "/:id", method = HttpMethod.DELETE)
@@ -45,7 +45,7 @@ public class ModuleHandler {
         if(ResponseUtil.endIfParamBlank(context, id, "id不可为空")){
             return;
         }
-        moduleService.remove(context, new JsonObject().put("_id", id));
+        moduleService.removeWithEnd(context, new JsonObject().put("_id", id));
     }
 
     @RequestMapping(method = HttpMethod.POST)
@@ -77,15 +77,15 @@ public class ModuleHandler {
             }
             String modulePath = targetPath.substring(0, targetPath.lastIndexOf("/"));
             String dockerFilePath = modulePath + "/Dockerfile";
-            moduleService.save(context, jsonObject.put("targetPath", targetPath)
+            moduleService.saveWithEnd(context, jsonObject.put("targetPath", targetPath)
                     .put("modulePath", modulePath).put("dockerFilePath", dockerFilePath));
         });
     }
 
     @RequestMapping("/package")
     public void cmdpackage(RoutingContext context, MultiMap map){
-        String moudleId = map.get("moudleId");
-        if(ResponseUtil.endIfParamBlank(context, moudleId, "moudleId不可为空")){
+        String moudleId = map.get("_id");
+        if(ResponseUtil.endIfParamBlank(context, moudleId, "id不可为空")){
             return;
         }
         String branchName = map.get("branchName");
@@ -97,7 +97,7 @@ public class ModuleHandler {
             return;
         }
 
-        moduleService.findOne(context, new JsonObject().put("_id", moudleId), res ->{
+        moduleService.findOneWithEnd(context, new JsonObject().put("_id", moudleId), res ->{
             vertx.eventBus().send("module.cmdpackage", res.put("branchName", branchName).put("ip", ip));
         });
     }
