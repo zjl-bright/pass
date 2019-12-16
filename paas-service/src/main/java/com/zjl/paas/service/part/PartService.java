@@ -6,7 +6,6 @@ import io.vertx.core.json.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Singleton;
-import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -30,20 +29,6 @@ public class PartService extends BaseService<Part> {
                 }
             } catch (Exception e){
                 log.error("PartService findone failed , cause by : {}", Throwables.getStackTraceAsString(e));
-            }
-        });
-    }
-
-    public void find(JsonObject jsonObject, Consumer<List<JsonObject>> consumer){
-        getMongoRepository().find(getCollection(), jsonObject, res -> {
-            try{
-                if(res.succeeded()){
-                    consumer.accept(res.result());
-                }else{
-                    log.error("PartService find failed , cause by : {}", Throwables.getStackTraceAsString(res.cause()));
-                }
-            } catch (Exception e){
-                log.error("PartService find failed , cause by : {}", Throwables.getStackTraceAsString(e));
             }
         });
     }

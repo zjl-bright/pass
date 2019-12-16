@@ -1,6 +1,7 @@
 package com.zjl.paas.service.part;
 
 import com.google.common.base.Throwables;
+import com.google.common.collect.Lists;
 import com.zjl.paas.service.module.ModuleService;
 import com.zjl.paas.service.project.ProjectService;
 import io.vertx.core.CompositeFuture;
@@ -49,7 +50,7 @@ public class PartHandler {
             return;
         }
         Future.<List<JsonObject>>future(promise -> {
-            partService.find(new JsonObject().put("projectId", projectId), res -> {
+            partService.find(context, new JsonObject().put("projectId", projectId), res -> {
                 promise.complete(res);
             });
         }).compose(v -> Future.future(promise -> {
@@ -57,7 +58,7 @@ public class PartHandler {
             for (JsonObject part : v) {
                 list.add(Future.future(promise1 -> {
                     String partId = part.getString("_id");
-                    moduleService.find(new JsonObject().put("partId", partId), res -> {
+                    moduleService.find(context, new JsonObject().put("partId", partId), res -> {
                         part.put("modules", res);
                         promise1.complete();
                     });
@@ -69,32 +70,27 @@ public class PartHandler {
         }));
     }
 
-    //TODO 是否要删除该项目的所有配置，比如已经下拉的代码（实际的文件）还有对应的 module
     @RequestMapping(value = "/:id", method = HttpMethod.DELETE)
     public void delete(RoutingContext context, String id){
         if(ResponseUtil.endIfParamBlank(context, id, "id不可为空")){
             return;
         }
-//        JsonObject dePart = new JsonObject().put("_id", id);
-//        partService.findOne(context, dePart, partRes -> {
-//            partService.remove(context, dePart, partDeleteRes -> {
-//                if(partDeleteRes.getRemovedCount() > 0){
-//                    moduleService.remove(context, new JsonObject().put("partId", id), moduleRes -> true);
-//                    partRes.forEach(part -> {
-//                        String path = part.getString("path");
-//                        vertx.fileSystem().deleteRecursive(path, true, ar -> {
-//                            if(ar.failed()){
-//                                log.error("delete project: {}，delete file path: {}", id, path, Throwables.getStackTraceAsString(ar.cause()));
-//                            }
-//                        });
-//                    });
-//                }
-//            });
-//        });
-
-        partService.remove(context, new JsonObject().put("_id", id), partRes -> {
-
-        });
+        JsonObject dePart = new JsonObject().put("_id", id);
+        Future.<JsonObject>future(promise ->{
+            partService.findOne(context, dePart, partRes -> {promise.complete(partRes);});
+        }).compose(res -> Future.<JsonObject>future(promise -> {
+            partService.remove(context, dePart, partRes -> {promise.complete(res);});
+        })).compose(res -> Future.future(promise -> {
+            String path = res.getString("path");
+            vertx.fileSystem().deleteRecursive(path, true, ar -> {
+                if(ar.failed()){
+                    log.error("delete part: {}，delete file path: {}", id, path, Throwables.getStackTraceAsString(ar.cause()));
+                }
+                promise.complete();
+            });
+        })).compose(res -> Future.future(promise -> {
+            moduleService.removeWithEnd(context, new JsonObject().put("partId", id));
+        }));
     }
 
 
